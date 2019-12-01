@@ -1,0 +1,57 @@
+#!/bin/sh
+
+basedir=/usr/share/mysql-8.0/
+bindir=/usr/bin
+
+if test -x $bindir/mysqld_safe
+then
+  mysqld="$bindir/mysqld_safe";
+else
+  echo "Can't execute $bindir/mysqld_safe from dir $basedir";
+  exit;
+fi
+
+status()
+{
+    mysql -e 'show status'
+    return
+}
+
+start()
+{
+    "$mysqld" &
+    until mysql -e 'show status' > /dev/null 2>&1; do
+        printf '.'
+        sleep 1
+    done
+    printf '\n'
+    return
+}
+
+stop()
+{
+    kill `cat /var/run/mysqld/mysqld.pid`
+    return
+}
+
+case "$1" in
+    'start' )
+        start
+        ;;
+    'status' )
+        status
+        ;;
+    'stop' )
+        stop
+        ;;
+    'restart' )
+        stop
+        sleep 1
+        start
+	;;
+    *)
+        echo "Usage: $0 {start|status|stop|restart}" >&2
+        ;;
+esac
+
+exit 0
