@@ -8,6 +8,7 @@ ARG mysql_wp_pw="test"
 ARG mysql_php_user="phpadmin"
 ARG mysql_php_pw="test"
 ARG phpmyadmin_secret=",3Eet7Gu:O2VRV4GGSf0Wl8JI:iMXwEr"
+ARG autoindex="on"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -27,6 +28,7 @@ RUN wget -qO /tmp/wordpress.tar.gz https://wordpress.org/latest.tar.gz
 RUN cd /tmp && tar xzf wordpress.tar.gz && rm -f wordpress.tar.gz && mv wordpress/* /var/www/html/ && rmdir wordpress
 # nginx config
 COPY srcs/nginx-default /etc/nginx/sites-enabled/default
+RUN sed -i "s/autoindex off/autoindex $autoindex/" /etc/nginx/sites-enabled/default
 # php config
 RUN cd /usr/share/phpmyadmin && sed -e "s|cfg\['blowfish_secret'\] = ''|cfg['blowfish_secret'] = '$phpmyadmin_secret'|" config.sample.inc.php > config.inc.php
 # wordpress config
