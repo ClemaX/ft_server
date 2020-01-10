@@ -36,7 +36,6 @@ RUN cd /var/www/html && sed -e "s/database_name_here/$mysql_wp_db/" -e "s/userna
 # mysql config
 COPY srcs/mysql.server /etc/init.d/mysql.server
 RUN chmod a+x /etc/init.d/mysql.server
-RUN service mysql.server start && mysql -e "CREATE DATABASE phpmyadmin;CREATE USER $mysql_php_user IDENTIFIED WITH mysql_native_password BY '$mysql_php_pw';GRANT ALL PRIVILEGES ON phpmyadmin.* TO '$mysql_php_user'" && service mysql.server stop
-RUN service mysql.server start && mysql -e "CREATE DATABASE $mysql_wp_db;CREATE USER $mysql_wp_user IDENTIFIED WITH mysql_native_password BY '$mysql_wp_pw';GRANT ALL PRIVILEGES ON $mysql_wp_db.* TO '$mysql_wp_user'" && service mysql.server stop
+RUN service mysql.server start && mysql -e "CREATE DATABASE phpmyadmin; CREATE USER $mysql_php_user IDENTIFIED WITH mysql_native_password BY '$mysql_php_pw'; GRANT ALL PRIVILEGES ON phpmyadmin.* TO '$mysql_php_user'; CREATE DATABASE $mysql_wp_db;CREATE USER $mysql_wp_user IDENTIFIED WITH mysql_native_password BY '$mysql_wp_pw'; GRANT ALL PRIVILEGES ON $mysql_wp_db.* TO '$mysql_wp_user'" && service mysql.server stop
 # run server
-CMD service mysql.server start && service php7.3-fpm start && service nginx start && tail -f /dev/null
+CMD service mysql.server start && service php7.3-fpm start && nginx -g 'daemon off;'
